@@ -1,10 +1,7 @@
 pipeline {
     agent any
     tools {
-        nodejs "NodeJS 20"
-    }
-    environment {
-        NVM_DIR = "/var/lib/jenkins/.nvm"
+        nodejs 'NodeJS 20' // Ensure this matches the name in Global Tool Configuration
     }
     stages {
         stage('Pull Code') {
@@ -14,20 +11,18 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
+                sh 'npm install pm2' // Install pm2 locally
                 sh 'npm install'
             }
         }
         stage('Restart Application') {
             steps {
-                sh '''
-                [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
-                pm2 restart express-app || pm2 start server.js --name express-app
-                '''
+                sh './node_modules/.bin/pm2 restart express-app || ./node_modules/.bin/pm2 start server.js --name express-app'
             }
         }
         stage('Test') {
             steps {
-                sh 'npm test || true'
+                sh 'npm test || true' // Consider removing || true if tests are critical
             }
         }
     }
