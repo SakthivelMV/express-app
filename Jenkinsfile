@@ -3,6 +3,9 @@ pipeline {
     tools {
         nodejs "NodeJS 20"
     }
+    environment {
+        NVM_DIR = "/var/lib/jenkins/.nvm"
+    }
     stages {
         stage('Pull Code') {
             steps {
@@ -16,7 +19,10 @@ pipeline {
         }
         stage('Restart Application') {
             steps {
-                sh 'pm2 restart express-frontend || pm2 start server.js --name express-frontend'
+                sh '''
+                [ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"
+                pm2 restart express-app || pm2 start server.js --name express-app
+                '''
             }
         }
         stage('Test') {
