@@ -14,25 +14,15 @@ This project demonstrates how to deploy a Flask backend and an Express frontend 
 ssh -i your-key.pem ubuntu@<EC2-PUBLIC-IP>
 
 
-**Install Dependencies:
-sudo apt update
-sudo apt install -y python3-pip nodejs npm git
+**Install Modules and Dependencies:
+npm install
+sudo npm install -g pm2
+pm2 start app.js --name express-app
+pm2 save
+
 
 Clone Repositories:
 git clone https://github.com/your-username/express-app.git
-
-Install App Dependencies:
-cd flask-app
-pip3 install -r requirements.txt
-
-cd ../express-app
-npm install
-
-
-Run Applications with PM2:
-pm2 start "python3 app.py" --name flask-app
-pm2 start app.js --name express-app
-pm2 save
 
 Install Jenkins:
 sudo apt update
