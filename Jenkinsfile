@@ -1,22 +1,17 @@
 pipeline {
     agent any
 
-    stage('Install Dependencies') {
-    steps {
-        sh 'npm install'
-    }
-}
-
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git url: 'https://github.com/SakthivelMV/express-app', branch: 'main'
+            }
+        }
 
         stage('Install Dependencies') {
             steps {
-                sh 'node -v && npm -v' // Verify Node.js is available
+                sh 'node -v && npm -v'
                 sh 'npm install'
-
-                // Retry PM2 install to handle transient failures
-                retry(2) {
-                    sh 'npm install -g pm2 || true'
-                }
             }
         }
 
@@ -33,15 +28,14 @@ pipeline {
         }
 
         stage('Restart Application') {
-    steps {
-        sh '''
-            npx pm2 delete all || true
-            npx pm2 start server.js --name express-app
-            npx pm2 save
-        '''
-    }
-}
-
+            steps {
+                sh '''
+                    npx pm2 delete all || true
+                    npx pm2 start index.js --name express-app
+                    npx pm2 save
+                '''
+            }
+        }
 
         stage('Health Check') {
             steps {
@@ -54,11 +48,11 @@ pipeline {
     }
 
     post {
-        failure {
-            echo 'Pipeline failed. Check logs above for details.'
-        }
         success {
-            echo 'Pipeline completed successfully.'
+            echo '✅ Pipeline completed successfully.'
+        }
+        failure {
+            echo '❌ Pipeline failed. Check logs above for details.'
         }
     }
 }
