@@ -39,7 +39,7 @@ pipeline {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     sh '''
                         npx pm2 delete all || true
-                        npx pm2 start index.js --name express-app
+                        npx pm2 start server.js --name express-app
                         npx pm2 save
                     '''
                 }
