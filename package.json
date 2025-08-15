@@ -6,6 +6,9 @@
         "start": "node server.js",
         "test": "jest"
     },
+  "engines": {
+    "node": ">=20.0.0"
+  },
     "dependencies": {
     "express": "^4.19.2",
     "axios": "^1.7.7",
