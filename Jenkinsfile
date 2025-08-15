@@ -19,20 +19,20 @@ pipeline {
             }
         }
 
-        stage('Clean Port') {
-            steps {
-                sh '''
-                PORT=3000
-                PID=$(lsof -ti tcp:$PORT)
-                if [ -n "$PID" ]; then
-                  echo "Killing process on port $PORT (PID: $PID)"
-                  kill -9 $PID
-                else
-                  echo "Port $PORT is free"
-                fi
-                '''
-            }
-        }
+       stage('Clean Port') {
+  steps {
+    script {
+      def port = 3000
+      def pid = sh(script: "lsof -ti tcp:${port}", returnStdout: true).trim()
+      if (pid) {
+        sh "kill -9 ${pid}"
+        echo "Killed process ${pid} on port ${port}"
+      } else {
+        echo "No process found on port ${port}, continuing..."
+      }
+    }
+  }
+}
 
         stage('Restart Application') {
             steps {
