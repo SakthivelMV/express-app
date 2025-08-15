@@ -15,7 +15,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 // Use npm ci for clean, reproducible installs
-                sh 'npm ci'
+                sh 'npm install'
             }
         }
 
