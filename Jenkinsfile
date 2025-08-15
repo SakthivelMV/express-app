@@ -21,18 +21,20 @@ pipeline {
         }
 
         stage('Clean Port') {
-            steps {
-                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                    sh '''
-                        PORT=3000
-                        PID=$(lsof -ti tcp:$PORT)
-                        if [ ! -z "$PID" ]; then
-                          kill -9 $PID || true
-                        fi
-                    '''
-                }
-            }
+    steps {
+        catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+            sh '''
+                PORT=3000
+                PID=$(lsof -ti tcp:$PORT)
+                if [ ! -z "$PID" ]; then
+                  kill -9 $PID || true
+                else
+                  echo "No process running on port $PORT"
+                fi
+            '''
         }
+    }
+}
 
         stage('Restart Application') {
             steps {
