@@ -16,6 +16,7 @@ pipeline {
             steps {
                 // Use npm ci for clean, reproducible installs
                 sh 'npm install'
+                sh 'npm install -g pm2'
             }
         }
 
@@ -23,8 +24,8 @@ pipeline {
             steps {
                 // Ensure PM2 is installed locally and restart/start the app with logs
                 sh '''
-                ./node_modules/.bin/pm2 restart express-app || ./node_modules/.bin/pm2 start server.js --name express-app
-                ./node_modules/.bin/pm2 logs express-app --lines 10
+                pm2 restart express-app || pm2 start server.js --name express-app
+                pm2 logs express-app --lines 10
                 '''
             }
         }
