@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        NODE_HOME = tool name: 'NodeJS_18', type: 'NodeJSInstallation'
-        PATH = "${NODE_HOME}/bin:${env.PATH}"
-    }
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -15,6 +10,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                sh 'node -v && npm -v' // Verify Node.js is available
                 sh 'npm install'
 
                 // Retry PM2 install to handle transient failures
@@ -26,7 +22,6 @@ pipeline {
 
         stage('Clean Port') {
             steps {
-                // Optional: kill any process on port 3000
                 sh '''
                     PORT=3000
                     PID=$(lsof -ti tcp:$PORT)
