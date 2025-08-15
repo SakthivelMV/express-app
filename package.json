@@ -1,16 +1,18 @@
-"name": "express-frontend",
-    "version": "1.0.0",
-    "description": "Express frontend for Flask backend",
-    "main": "server.js",
-    "scripts": {
-        "start": "node server.js",
-        "test": "jest"
-    },
+{
+  "name": "express-frontend",
+  "version": "1.0.0",
+  "description": "Express frontend for Flask backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
   "engines": {
     "node": ">=20.0.0"
   },
-    "dependencies": {
+  "dependencies": {
     "express": "^4.19.2",
     "axios": "^1.7.7",
     "jest": "^29.7.0"
+  }
 }
