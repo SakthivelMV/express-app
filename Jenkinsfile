@@ -1,12 +1,12 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout Code') {
-            steps {
-                git url: 'https://github.com/SakthivelMV/express-app', branch: 'main'
-            }
-        }
+    stage('Install Dependencies') {
+    steps {
+        sh 'npm install'
+    }
+}
+
 
         stage('Install Dependencies') {
             steps {
@@ -33,14 +33,15 @@ pipeline {
         }
 
         stage('Restart Application') {
-            steps {
-                sh '''
-                    pm2 delete all || true
-                    pm2 start index.js --name express-app
-                    pm2 save
-                '''
-            }
-        }
+    steps {
+        sh '''
+            npx pm2 delete all || true
+            npx pm2 start server.js --name express-app
+            npx pm2 save
+        '''
+    }
+}
+
 
         stage('Health Check') {
             steps {
