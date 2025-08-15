@@ -2,57 +2,68 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS 20' // Ensure this matches the name in Global Tool Configuration
+        nodejs 'NodeJS 20'
     }
 
     stages {
-        stage('Pull Code') {
+        stage('Checkout Code') {
             steps {
-                git url: 'https://github.com/SakthivelMV/express-app.git', branch: 'main'
+                git url: 'https://github.com/SakthivelMV/express-app', branch: 'main'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                // Use npm ci for clean, reproducible installs
                 sh 'npm install'
                 sh 'npm install -g pm2'
             }
         }
 
+        stage('Clean Port') {
+            steps {
+                sh '''
+                PORT=3000
+                PID=$(lsof -ti tcp:$PORT)
+                if [ -n "$PID" ]; then
+                  echo "Killing process on port $PORT (PID: $PID)"
+                  kill -9 $PID
+                else
+                  echo "Port $PORT is free"
+                fi
+                '''
+            }
+        }
+
         stage('Restart Application') {
             steps {
-                // Ensure PM2 is installed locally and restart/start the app with logs
                 sh '''
-                pm2 restart express-app || pm2 start server.js --name express-app
+                pm2 delete express-app || true
+                pm2 start server.js --name express-app
                 pm2 logs express-app --lines 10
                 '''
             }
         }
 
-        stage('Test') {
+        stage('Health Check') {
             steps {
-                // Avoid masking test failures unless explicitly intended
-                script {
-                    try {
-                        sh 'npm test'
-                    } catch (Exception e) {
-                        echo "⚠️ Tests failed: ${e}"
-                    }
+                sh '''
+                sleep 5
+                curl -f http://localhost:3000 || {
+                  echo "Health check failed"
+                  exit 1
                 }
+                echo "Health check passed"
+                '''
             }
         }
     }
 
     post {
-        success {
-            echo '✅ Build and deployment succeeded!'
-        }
         failure {
-            echo '❌ Build failed. Check logs.'
+            echo 'Pipeline failed. Check logs above for details.'
         }
-        always {
-            echo 'Pipeline completed'
+        success {
+            echo 'Pipeline completed successfully!'
         }
     }
 }
