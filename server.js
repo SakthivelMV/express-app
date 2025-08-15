@@ -5,6 +5,10 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ✅ Health check endpoint for Jenkins
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
 app.get('/api/backend-data', async (req, res) => {
     try {
         const response = await axios.get('http://localhost:5000/api/data');
